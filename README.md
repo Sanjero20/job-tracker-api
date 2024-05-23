@@ -11,6 +11,7 @@ POSTGRES_URL="connection_string"
 # For Local
 DB_USER=""
 DB_PASS=""
+DB_NAME="job_tracker"
 DB_HOST="localhost"
 DB_PORT=5432
 ```

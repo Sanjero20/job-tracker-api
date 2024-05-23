@@ -3,7 +3,7 @@ import pg from 'pg';
 const localConfig = {
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
-  database: 'job_tracker',
+  database: process.env.DB_NAME,
   host: 'localhost',
   port: 5432,
 };

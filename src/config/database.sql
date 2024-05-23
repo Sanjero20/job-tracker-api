@@ -1,8 +1,16 @@
--- setup schema
+CREATE DATABASE job_tracker;
 
-CREATE TABLE job_application
+CREATE TABLE accounts
+(
+  user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  username VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE job_applications
 (
   id SERIAL PRIMARY KEY,
+  user_id UUID REFERENCES accounts(user_id) ON DELETE CASCADE,
   status VARCHAR(50),
   position VARCHAR(100),
   company_name VARCHAR(255) NOT NULL,
