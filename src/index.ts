@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors';
 
 dotenv.config();
 
@@ -9,8 +10,9 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 app.use(express.json());
+app.use(cors());
 
-const TABLE_NAME = 'job_application';
+const TABLE_NAME = 'job_applications';
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Backend api for job tracker app');
