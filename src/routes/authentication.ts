@@ -16,8 +16,7 @@ router.post('/register', async (req: Request, res: Response) => {
 
     // Prevent from continuing the registration process if email is already registered
     if (accounts.rows.length != 0) {
-      res.status(401).json('Email already exists');
-      return;
+      return res.status(401).json({ message: 'Email already exists' });
     }
 
     // Encrypt password before inserting to database
@@ -30,17 +29,41 @@ router.post('/register', async (req: Request, res: Response) => {
     );
 
     const token = generateToken(newUser.rows[0].user_id);
-    return res.json({ token });
+    res.json({ token });
   } catch (error) {
     console.error('Server Error', error);
     res.status(500).send('Server Error');
   }
 });
 
-router.post('/login', (req: Request, res: Response) => {
+router.post('/login', async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  // Validate credentials
-  // Return jwt token
+
+  try {
+    const account = await pool.query(
+      'SELECT * FROM accounts WHERE email = $1',
+      [email]
+    );
+
+    if (account.rows.length === 0) {
+      return res.status(401).send({ message: 'Account not found in database' });
+    }
+
+    const validPassword = await bcrypt.compare(
+      password,
+      account.rows[0].password
+    );
+
+    if (!validPassword) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    const token = generateToken(account.rows[0].user_id);
+    res.json({ token });
+  } catch (error) {
+    console.error('Server Error', error);
+    res.status(500).send('Server Error');
+  }
 });
 
 export default router;
