@@ -1,9 +1,10 @@
 import express, { Request, Response } from 'express';
 import { pool } from '../config/pool';
+import { verifyToken } from '../middlewares/verifyToken';
 
 const router = express.Router();
 
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', verifyToken, async (req: Request, res: Response) => {
   const data = await pool.query(`SELECT * FROM job_applications`);
   const applications = data.rows;
 
