@@ -4,8 +4,14 @@ import { verifyToken } from '../middlewares/verifyToken';
 
 const router = express.Router();
 
-router.get('/', verifyToken, async (req: Request, res: Response) => {
-  const data = await pool.query(`SELECT * FROM job_applications`);
+router.get('/', verifyToken, async (req: any, res: Response) => {
+  const user_id = req.user.id;
+
+  const data = await pool.query(
+    `SELECT * FROM job_applications WHERE user_id = $1`,
+    [user_id]
+  );
+
   const applications = data.rows;
 
   res.json({

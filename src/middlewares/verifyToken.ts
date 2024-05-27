@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-export function verifyToken(req: Request, res: Response, next: NextFunction) {
+export function verifyToken(req: any, res: any, next: NextFunction) {
   const token = req.header('token');
 
   if (!token) {
@@ -19,7 +19,7 @@ export function verifyToken(req: Request, res: Response, next: NextFunction) {
     }
 
     const verify = jwt.verify(token, secret) as JwtPayload;
-    (req as any).user = verify.user;
+    req.user = verify.user;
     next();
   } catch (error) {
     res.status(401).json({ message: 'Token is not valid' });
