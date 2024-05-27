@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import { pool } from '../config/pool';
 import { generateToken } from '../utils/token';
+import { verifyToken } from '../middlewares/verifyToken';
 
 const router = express.Router();
 
@@ -63,6 +64,15 @@ router.post('/login', async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Server Error', error);
     res.status(500).send('Server Error');
+  }
+});
+
+router.post('/verify', verifyToken, (req: any, res: any) => {
+  try {
+    res.json({ isLoggedIn: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
