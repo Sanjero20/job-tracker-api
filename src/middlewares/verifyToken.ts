@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export function verifyToken(req: any, res: any, next: NextFunction) {
-  const token = req.header('token');
+  const token = req.cookies.token;
 
   if (!token) {
     return res.status(403).json({ message: 'Access denied' });
