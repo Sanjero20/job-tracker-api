@@ -7,6 +7,7 @@ In the .env file, insert the connection string from your hosting provider
 ```env
 # For External hosting
 POSTGRES_URL="connection_string"
+PORT=8000
 
 # For Local
 DB_USER=""
@@ -14,6 +15,9 @@ DB_PASS=""
 DB_NAME="job_tracker"
 DB_HOST="localhost"
 DB_PORT=5432
+
+JWT_SECRET=""
+CLIENT_URL="http://localhost:5173"
 ```
 
 > The system will prioritize connecting to external hosting over local hosting.
