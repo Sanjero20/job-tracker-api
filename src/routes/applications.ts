@@ -19,7 +19,9 @@ router.get('/', verifyToken, async (req: any, res: Response) => {
   });
 });
 
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', verifyToken, async (req: any, res: Response) => {
+  const user_id = req.user.id;
+
   const {
     status,
     position,
@@ -33,10 +35,11 @@ router.post('/', async (req: Request, res: Response) => {
   } = req.body;
 
   const query = `
-    INSERT INTO job_application (status, position, company_name, min_compensation, max_compensation, setup, job_site, job_link, note)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`;
+    INSERT INTO job_applications (user_id, status, position, company_name, min_compensation, max_compensation, setup, job_site, job_link, note)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`;
 
   const values = [
+    user_id,
     status,
     position,
     company_name,
@@ -50,8 +53,11 @@ router.post('/', async (req: Request, res: Response) => {
 
   try {
     const result = await pool.query(query, values);
-    res.status(201).json({ message: 'Job application added to list' });
+    res
+      .status(201)
+      .json({ message: 'Job application added to list', data: result.rows[0] });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
