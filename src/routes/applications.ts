@@ -9,7 +9,7 @@ router.get('/', verifyToken, async (req: any, res: Response) => {
   const user_id = req.user.id;
 
   const data = await pool.query(
-    `SELECT * FROM job_applications WHERE user_id = $1`,
+    `SELECT * FROM job_applications WHERE user_id = $1 ORDER BY id`,
     [user_id]
   );
 
@@ -64,9 +64,26 @@ router.post('/', verifyToken, async (req: any, res: Response) => {
   }
 });
 
+// Update status by id
+router.put('/:id', verifyToken, async (req: any, res: any) => {
+  const id = req.params['id'];
+  const { status } = req.body;
+
+  const query = 'UPDATE job_applications SET status = $1 WHERE id = $2';
+  const values = [status, id];
+
+  try {
+    const response = await pool.query(query, values);
+    res.status(201).json({ message: 'Successfully updated' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // Delete by job_id
-router.delete('/:user_id/:id', verifyToken, async (req: any, res: any) => {
-  const user_id = req.params['user_id'];
+router.delete('/:id', verifyToken, async (req: any, res: any) => {
+  const user_id = req.user.id;
   const id = req.params['id'];
 
   const query = 'DELETE FROM job_applications WHERE user_id = $1, id = $2';
@@ -76,6 +93,7 @@ router.delete('/:user_id/:id', verifyToken, async (req: any, res: any) => {
     await pool.query(query, values);
     res.status(200).json({ message: 'Successfully deleted' });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
