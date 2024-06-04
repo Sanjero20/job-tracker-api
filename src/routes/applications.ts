@@ -4,6 +4,7 @@ import { verifyToken } from '../middlewares/verifyToken';
 
 const router = express.Router();
 
+// Get all job applications by user id
 router.get('/', verifyToken, async (req: any, res: Response) => {
   const user_id = req.user.id;
 
@@ -19,6 +20,7 @@ router.get('/', verifyToken, async (req: any, res: Response) => {
   });
 });
 
+// Add new job application
 router.post('/', verifyToken, async (req: any, res: Response) => {
   const user_id = req.user.id;
 
@@ -56,6 +58,38 @@ router.post('/', verifyToken, async (req: any, res: Response) => {
     res
       .status(201)
       .json({ message: 'Job application added to list', data: result.rows[0] });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Delete by job_id
+router.delete('/:user_id/:id', verifyToken, async (req: any, res: any) => {
+  const user_id = req.params['user_id'];
+  const id = req.params['id'];
+
+  const query = 'DELETE FROM job_applications WHERE user_id = $1, id = $2';
+  const values = [user_id, id];
+
+  try {
+    await pool.query(query, values);
+    res.status(200).json({ message: 'Successfully deleted' });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Delete all
+router.delete('/all', verifyToken, async (req: any, res: any) => {
+  const user_id = req.user.id;
+
+  const query = 'DELETE FROM job_applications WHERE user_id = $1';
+  const value = [user_id];
+
+  try {
+    await pool.query(query, value);
+    res.status(200).json({ message: 'Successfully deleted all applications' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
