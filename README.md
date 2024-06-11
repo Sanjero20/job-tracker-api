@@ -17,6 +17,8 @@ DB_HOST="localhost"
 DB_PORT=5432
 
 JWT_SECRET=""
+JWT_SECRET_LIFE="1d"
+
 CLIENT_URL="http://localhost:5173"
 ```
 
