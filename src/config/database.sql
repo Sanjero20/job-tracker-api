@@ -18,8 +18,8 @@ CREATE TABLE job_applications
   max_compensation INTEGER DEFAULT NULL,
   setup VARCHAR(50) CHECK (setup IN ('remote', 'on-site', 'hybrid')),
   application_date DATE DEFAULT CURRENT_DATE,
-  job_site VARCHAR(100) NOT NULL,
-  job_link TEXT NOT NULL,
+  site VARCHAR(100) NOT NULL,
+  url TEXT NOT NULL,
   note TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP

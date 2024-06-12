@@ -31,13 +31,13 @@ router.post('/', verifyToken, async (req: any, res: Response) => {
     min_compensation,
     max_compensation,
     setup,
-    job_site,
-    job_link,
+    site,
+    url,
     note,
   } = req.body;
 
   const query = `
-    INSERT INTO job_applications (user_id, status, position, company_name, min_compensation, max_compensation, setup, job_site, job_link, note)
+    INSERT INTO job_applications (user_id, status, position, company_name, min_compensation, max_compensation, setup, site, url, note)
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`;
 
   const values = [
@@ -48,8 +48,8 @@ router.post('/', verifyToken, async (req: any, res: Response) => {
     min_compensation,
     max_compensation,
     setup,
-    job_site,
-    job_link,
+    site,
+    url,
     note,
   ];
 
