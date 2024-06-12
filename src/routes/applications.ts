@@ -86,7 +86,7 @@ router.delete('/:id', verifyToken, async (req: any, res: any) => {
   const user_id = req.user.id;
   const id = req.params['id'];
 
-  const query = 'DELETE FROM job_applications WHERE user_id = $1, id = $2';
+  const query = 'DELETE FROM job_applications WHERE user_id = $1 AND id = $2';
   const values = [user_id, id];
 
   try {
