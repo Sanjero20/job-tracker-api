@@ -64,6 +64,60 @@ router.post('/', verifyToken, async (req: any, res: Response) => {
   }
 });
 
+router.post('/:id', verifyToken, async (req: any, res: Response) => {
+  const user_id = req.user.id;
+  const id = req.params['id'];
+
+  const {
+    status,
+    position,
+    company_name,
+    min_compensation,
+    max_compensation,
+    setup,
+    site,
+    url,
+    note,
+  } = req.body;
+
+  const query = `
+    UPDATE job_applications 
+    SET  
+      status = $1, 
+      position = $2, 
+      company_name = $3, 
+      min_compensation =$4, 
+      max_compensation = $5, 
+      setup = $6, 
+      site = $7,
+      url = $8,
+      note = $9
+    WHERE id = $10 AND user_id = $11
+    `;
+
+  const values = [
+    status,
+    position,
+    company_name,
+    min_compensation,
+    max_compensation,
+    setup,
+    site,
+    url,
+    note,
+    id,
+    user_id,
+  ];
+
+  try {
+    await pool.query(query, values);
+    res.status(201).json({ message: 'Successfully updated contents' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // Update status by id
 router.put('/:id', verifyToken, async (req: any, res: any) => {
   const id = req.params['id'];
