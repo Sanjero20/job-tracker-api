@@ -2,6 +2,8 @@ import express, { Request, Response } from 'express';
 import { verifyToken } from '../middlewares/verifyToken';
 import { pool } from '../config/pool';
 
+import moment from 'moment';
+
 const router = express.Router();
 
 // Overview
@@ -62,6 +64,50 @@ router.get('/status', verifyToken, async (req: any, res: Response) => {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
   }
+});
+
+router.get('/activity', verifyToken, async (req: any, res: Response) => {
+  const user_id = req.user.id;
+
+  const query = `
+    SELECT 
+      TO_CHAR(application_date, 'YYYY-MM-DD') AS date, 
+      COUNT(*)::int as count,
+      CASE
+        WHEN COUNT(*) BETWEEN 1 AND 3 THEN 1
+        WHEN COUNT(*) BETWEEN 4 AND 6 THEN 2 
+        WHEN COUNT(*) BETWEEN 7 AND 9 THEN 3 
+        ELSE 4
+      END AS level
+    FROM job_applications
+    WHERE user_id = $1 
+    GROUP BY application_date
+  `;
+  const values = [user_id];
+
+  const currentDate = new Date();
+  const lastYear = currentDate.getFullYear() - 1;
+
+  const endDate = {
+    date: moment(currentDate).format('YYYY-MM-DD'),
+    count: 0,
+    level: 0,
+  };
+
+  const startDate = {
+    date: moment(currentDate.setFullYear(lastYear)).format('YYYY-MM-DD'),
+    count: 0,
+    level: 0,
+  };
+
+  try {
+    const data = await pool.query(query, values);
+    res.status(200).json([startDate, endDate, ...data.rows]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+  //
 });
 
 export default router;
