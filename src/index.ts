@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 
 // Routes
 import authRoutes from './routes/authentication';
+import dashboardRoutes from './routes/dashboard';
 import applicationRoutes from './routes/applications';
 
 dotenv.config();
@@ -26,6 +27,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use('/auth', authRoutes);
+app.use('/dashboard', dashboardRoutes);
 app.use('/applications', applicationRoutes);
 
 app.listen(PORT, () => {
