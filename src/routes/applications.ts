@@ -9,7 +9,19 @@ router.get('/', verifyToken, async (req: any, res: Response) => {
   const user_id = req.user.id;
 
   const data = await pool.query(
-    `SELECT * FROM job_applications WHERE user_id = $1 ORDER BY id`,
+    `SELECT 
+      id,
+      status,
+      company_name,
+      position,
+      min_compensation,
+      max_compensation,
+      setup,
+      TO_CHAR(application_date, 'YYYY-MM-DD') AS application_date, 
+      site,
+      url,
+      note
+     FROM job_applications WHERE user_id = $1 ORDER BY id`,
     [user_id]
   );
 
@@ -31,14 +43,28 @@ router.post('/', verifyToken, async (req: any, res: Response) => {
     min_compensation,
     max_compensation,
     setup,
+    application_date,
     site,
     url,
     note,
   } = req.body;
 
   const query = `
-    INSERT INTO job_applications (user_id, status, position, company_name, min_compensation, max_compensation, setup, site, url, note)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`;
+    INSERT INTO job_applications 
+    (
+      user_id, 
+      status, 
+      position, 
+      company_name, 
+      min_compensation, 
+      max_compensation, 
+      setup, 
+      application_date,
+      site, 
+      url, 
+      note
+    )
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`;
 
   const values = [
     user_id,
@@ -48,6 +74,7 @@ router.post('/', verifyToken, async (req: any, res: Response) => {
     min_compensation,
     max_compensation,
     setup,
+    application_date,
     site,
     url,
     note,
@@ -75,6 +102,7 @@ router.post('/:id', verifyToken, async (req: any, res: Response) => {
     min_compensation,
     max_compensation,
     setup,
+    application_date,
     site,
     url,
     note,
@@ -89,10 +117,11 @@ router.post('/:id', verifyToken, async (req: any, res: Response) => {
       min_compensation =$4, 
       max_compensation = $5, 
       setup = $6, 
-      site = $7,
-      url = $8,
-      note = $9
-    WHERE id = $10 AND user_id = $11
+      application_date = $7,
+      site = $8,
+      url = $9,
+      note = $10
+    WHERE id = $11 AND user_id = $12
     `;
 
   const values = [
@@ -102,6 +131,7 @@ router.post('/:id', verifyToken, async (req: any, res: Response) => {
     min_compensation,
     max_compensation,
     setup,
+    application_date,
     site,
     url,
     note,
