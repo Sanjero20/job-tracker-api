@@ -66,8 +66,30 @@ router.get('/status', verifyToken, async (req: any, res: Response) => {
   }
 });
 
+interface IActivity {
+  date: string;
+  count: number;
+  level: number;
+}
+
 router.get('/activity', verifyToken, async (req: any, res: Response) => {
   const user_id = req.user.id;
+
+  const currentDate = new Date();
+  const lastYear = currentDate.getFullYear() - 1;
+
+  // Default starting and ending date
+  const end = {
+    date: moment(currentDate).format('YYYY-MM-DD'),
+    count: 0,
+    level: 0,
+  };
+
+  const start = {
+    date: moment(currentDate.setFullYear(lastYear)).format('YYYY-MM-DD'),
+    count: 0,
+    level: 0,
+  };
 
   const query = `
     SELECT 
@@ -80,29 +102,24 @@ router.get('/activity', verifyToken, async (req: any, res: Response) => {
         ELSE 4
       END AS level
     FROM job_applications
-    WHERE user_id = $1 
+    WHERE user_id = $1 AND application_date BETWEEN $2 AND $3
     GROUP BY application_date
   `;
-  const values = [user_id];
-
-  const currentDate = new Date();
-  const lastYear = currentDate.getFullYear() - 1;
-
-  const endDate = {
-    date: moment(currentDate).format('YYYY-MM-DD'),
-    count: 0,
-    level: 0,
-  };
-
-  const startDate = {
-    date: moment(currentDate.setFullYear(lastYear)).format('YYYY-MM-DD'),
-    count: 0,
-    level: 0,
-  };
+  const values = [user_id, start.date, end.date];
 
   try {
     const data = await pool.query(query, values);
-    res.status(200).json([startDate, endDate, ...data.rows]);
+    const applications: IActivity[] = data.rows;
+
+    if (applications[0].date !== start.date) {
+      applications.unshift(start);
+    }
+
+    if (applications[applications.length - 1].date !== end.date) {
+      applications.push(end);
+    }
+
+    res.status(200).json(applications);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
