@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import authRoutes from './routes/authentication';
 import dashboardRoutes from './routes/dashboard';
 import applicationRoutes from './routes/applications';
+import interviewRoutes from './routes/interviews';
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/auth', authRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/applications', applicationRoutes);
+app.use('/interviews', interviewRoutes);
 
 app.listen(PORT, () => {
   console.log(`[server]: Server is running at http://localhost:${PORT}`);
