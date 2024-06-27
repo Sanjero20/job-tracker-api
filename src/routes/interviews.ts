@@ -14,8 +14,8 @@ router.get('/', verifyToken, async (req: any, res: Response) => {
     ja.id AS application_id,
     ja.company_name,
     ja.position,
-    ji.schedule,
-    ji.link 
+    COALESCE(TO_CHAR(ji.schedule, 'YYYY-MM-DD'), '') AS schedule,
+    COALESCE(ji.link, '')  AS link
   FROM
     job_applications ja
   LEFT JOIN 
@@ -27,8 +27,6 @@ router.get('/', verifyToken, async (req: any, res: Response) => {
 
   try {
     const data = await pool.query(query, value);
-
-    console.log(data);
     res.status(200).json(data.rows);
   } catch (error) {
     console.error(error);
