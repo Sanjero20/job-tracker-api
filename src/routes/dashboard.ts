@@ -111,6 +111,10 @@ router.get('/activity', verifyToken, async (req: any, res: Response) => {
     const data = await pool.query(query, values);
     const applications: IActivity[] = data.rows;
 
+    if (applications.length <= 0) {
+      return res.status(200).json([start, end]);
+    }
+
     if (applications[0].date !== start.date) {
       applications.unshift(start);
     }
