@@ -32,6 +32,6 @@ CREATE TABLE job_interviews
   id SERIAL PRIMARY KEY,
   user_id UUID REFERENCES accounts(user_id) ON DELETE CASCADE,
   job_id INTEGER REFERENCES job_applications(id) ON DELETE CASCADE,
-  schedule DATE DEFAULT NULL
+  schedule DATE DEFAULT NULL,
   link TEXT DEFAULT NULL
 );
