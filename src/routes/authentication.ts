@@ -13,7 +13,7 @@ router.post(
   validateAuthInput,
   async (req: Request, res: Response) => {
     try {
-      const { email, password } = req.body;
+      const { email, password, first_name, last_name } = req.body;
 
       const accounts = await pool.query(
         'SELECT * FROM accounts WHERE email = $1',
@@ -30,8 +30,8 @@ router.post(
       const encryptedPassword = await bcrypt.hash(password, salt);
 
       const newUser = await pool.query(
-        'INSERT INTO accounts(email, password) VALUES ($1, $2) RETURNING *',
-        [email, encryptedPassword]
+        'INSERT INTO accounts(email, password, first_name, last_name) VALUES ($1, $2, $3, $4) RETURNING *',
+        [email, encryptedPassword, first_name, last_name]
       );
 
       const token = generateToken(newUser.rows[0].user_id);
