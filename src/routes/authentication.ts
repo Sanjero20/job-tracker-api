@@ -79,9 +79,17 @@ router.post(
   }
 );
 
-router.post('/verify', verifyToken, (req: any, res: any) => {
+router.post('/verify', verifyToken, async (req: any, res: any) => {
+  const user_id = req.user.id;
+
+  const query = `SELECT first_name, last_name, email FROM accounts WHERE user_id = $1`;
+  const value = [user_id];
+
   try {
-    res.json({ isLoggedIn: true });
+    const result = await pool.query(query, value);
+    const { first_name, last_name, email } = result.rows[0];
+    const name = `${first_name} ${last_name}`;
+    res.json({ isLoggedIn: true, name, email });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
