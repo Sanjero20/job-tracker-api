@@ -13,7 +13,7 @@ router.get('/overview', verifyToken, async (req: any, res: Response) => {
   // get all applications from a user
   const query = `
   SELECT 
-      COUNT(*) FILTER (WHERE status = 'In Progress') AS ongoing,
+      COUNT(*) FILTER (WHERE status IN ('In Progress', 'Interviewed')) AS ongoing,
       COUNT(*) FILTER (WHERE status = 'Offered') AS offered,
       COUNT(*) FILTER (WHERE status = 'Not Selected') AS rejected,
       COUNT(*) AS total
@@ -24,7 +24,6 @@ router.get('/overview', verifyToken, async (req: any, res: Response) => {
   try {
     const data = await pool.query(query, values);
     res.status(200).json(data.rows[0]);
-    //
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
