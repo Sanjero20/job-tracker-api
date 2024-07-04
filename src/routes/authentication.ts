@@ -13,7 +13,7 @@ router.post(
   validateAuthInput,
   async (req: Request, res: Response) => {
     try {
-      const { email, password, first_name, last_name } = req.body;
+      const { name, email, password } = req.body;
 
       const accounts = await pool.query(
         'SELECT * FROM accounts WHERE email = $1',
@@ -30,8 +30,8 @@ router.post(
       const encryptedPassword = await bcrypt.hash(password, salt);
 
       const newUser = await pool.query(
-        'INSERT INTO accounts(email, password, first_name, last_name) VALUES ($1, $2, $3, $4) RETURNING *',
-        [email, encryptedPassword, first_name, last_name]
+        'INSERT INTO accounts(name, email, password) VALUES ($1, $2, $3) RETURNING *',
+        [name, email, encryptedPassword]
       );
 
       const token = generateToken(newUser.rows[0].user_id);
@@ -56,9 +56,7 @@ router.post(
       );
 
       if (account.rows.length === 0) {
-        return res
-          .status(401)
-          .send({ message: 'Account not found in database' });
+        return res.status(401).send({ message: 'Account does not exist' });
       }
 
       const validPassword = await bcrypt.compare(
@@ -82,13 +80,12 @@ router.post(
 router.post('/verify', verifyToken, async (req: any, res: any) => {
   const user_id = req.user.id;
 
-  const query = `SELECT first_name, last_name, email FROM accounts WHERE user_id = $1`;
+  const query = `SELECT name, email FROM accounts WHERE user_id = $1`;
   const value = [user_id];
 
   try {
     const result = await pool.query(query, value);
-    const { first_name, last_name, email } = result.rows[0];
-    const name = `${first_name} ${last_name}`;
+    const { name, email } = result.rows[0];
     res.json({ isLoggedIn: true, name, email });
   } catch (error) {
     console.error(error);
