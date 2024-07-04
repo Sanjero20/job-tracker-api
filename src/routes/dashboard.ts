@@ -130,4 +130,31 @@ router.get('/activity', verifyToken, async (req: any, res: Response) => {
   //
 });
 
+router.get('/statistics', verifyToken, async (req: any, res: Response) => {
+  const user_id = req.user.id;
+
+  const query = `
+  SELECT 
+    CAST(COUNT(*) AS INTEGER)AS total,
+    CAST(COUNT(*) FILTER (WHERE status='Interviewed') AS INTEGER) AS interviewed,
+    CAST(COUNT(*) FILTER (WHERE status='Not Selected') AS INTEGER) AS rejected 
+  FROM job_applications 
+  WHERE user_id = $1`;
+  const value = [user_id];
+
+  try {
+    const result = await pool.query(query, value);
+
+    const { total, interviewed, rejected } = result.rows[0];
+
+    const interview_rate = Math.round((interviewed / total) * 100);
+    const rejection_rate = Math.round((rejected / total) * 100);
+
+    res.status(200).json({ interview_rate, rejection_rate });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 export default router;
