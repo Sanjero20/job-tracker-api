@@ -135,11 +135,12 @@ router.get('/statistics', verifyToken, async (req: any, res: Response) => {
 
   const query = `
   SELECT 
-    CAST(COUNT(*) AS INTEGER)AS total,
-    CAST(COUNT(*) FILTER (WHERE status='Interviewed') AS INTEGER) AS interviewed,
-    CAST(COUNT(*) FILTER (WHERE status='Not Selected') AS INTEGER) AS rejected 
-  FROM job_applications 
-  WHERE user_id = $1`;
+    CAST(COUNT(*) AS INTEGER) AS total,
+    CAST(COUNT(*) FILTER (WHERE ji.interviewed) AS INTEGER) AS interviewed,
+    CAST(COUNT(*) FILTER (WHERE ja.status='Not Selected') AS INTEGER) AS rejected 
+  FROM job_interviews ji 
+  RIGHT JOIN job_applications ja ON ja.id = ji.job_id
+  WHERE ja.user_id = $1`;
   const value = [user_id];
 
   try {
