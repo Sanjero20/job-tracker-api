@@ -32,5 +32,5 @@ CREATE TABLE job_interviews
   user_id UUID REFERENCES accounts(user_id) ON DELETE CASCADE,
   job_id INTEGER REFERENCES job_applications(id) ON DELETE CASCADE,
   schedule DATE DEFAULT NULL,
-  link TEXT DEFAULT NULL
+  interviewed BOOLEAN DEFAULT False
 );
