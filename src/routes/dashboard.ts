@@ -158,4 +158,20 @@ router.get('/statistics', verifyToken, async (req: any, res: Response) => {
   }
 });
 
+router.get('/interview-dates', verifyToken, async (req: any, res: Response) => {
+  const user_id = req.user.id;
+
+  const query = `SELECT schedule from job_interviews WHERE user_id = $1`;
+  const value = [user_id];
+
+  try {
+    const result = await pool.query(query, value);
+    const schedules = result.rows.map((sched) => sched.schedule);
+    res.status(200).json(schedules);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 export default router;
