@@ -148,8 +148,8 @@ router.get('/statistics', verifyToken, async (req: any, res: Response) => {
 
     const { total, interviewed, rejected } = result.rows[0];
 
-    const interview_rate = Math.round((interviewed / total) * 100);
-    const rejection_rate = Math.round((rejected / total) * 100);
+    const interview_rate = Math.round((interviewed / total) * 100) || 0;
+    const rejection_rate = Math.round((rejected / total) * 100) || 0;
 
     res.status(200).json({ interview_rate, rejection_rate });
   } catch (error) {
