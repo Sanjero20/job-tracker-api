@@ -24,6 +24,18 @@ router.delete('/data', verifyToken, async (req: any, res: Response) => {
 });
 
 // Delete account
-router.delete('/user', verifyToken, async (req: any, res: Response) => {});
+router.delete('/user', verifyToken, async (req: any, res: Response) => {
+  const user_id = req.user.id;
+
+  const query = 'DELETE FROM accounts WHERE user_id = $1';
+  const value = [user_id];
+
+  try {
+    await pool.query(query, value);
+    res.status(204).json({ message: 'Successfully delete user account' });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 export default router;
