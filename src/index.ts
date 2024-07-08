@@ -8,6 +8,7 @@ import authRoutes from './routes/authentication';
 import dashboardRoutes from './routes/dashboard';
 import applicationRoutes from './routes/applications';
 import interviewRoutes from './routes/interviews';
+import accountRoutes from './routes/accounts';
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ app.use('/auth', authRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/applications', applicationRoutes);
 app.use('/interviews', interviewRoutes);
+app.use('/accounts', accountRoutes);
 
 app.listen(PORT, () => {
   console.log(`[server]: Server is running at http://localhost:${PORT}`);
