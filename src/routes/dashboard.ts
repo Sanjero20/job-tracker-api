@@ -95,10 +95,10 @@ router.get('/activity', verifyToken, async (req: any, res: Response) => {
       TO_CHAR(application_date, 'YYYY-MM-DD') AS date, 
       COUNT(*)::int as count,
       CASE
-        WHEN COUNT(*) BETWEEN 1 AND 3 THEN 1
-        WHEN COUNT(*) BETWEEN 4 AND 6 THEN 2 
-        WHEN COUNT(*) BETWEEN 7 AND 9 THEN 3 
-        ELSE 4
+        WHEN COUNT(*) = 1 THEN 1
+        WHEN COUNT(*) BETWEEN 2 AND 4 THEN 2 
+        WHEN COUNT(*) BETWEEN 5 AND 6 THEN 3 
+      ELSE 4
       END AS level
     FROM job_applications
     WHERE user_id = $1 AND application_date BETWEEN $2 AND $3
